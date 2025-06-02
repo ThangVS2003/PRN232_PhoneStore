@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PhoneStore.Repositories;
+﻿using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
+using PhoneStore.BusinessObjects.Models;
 using PhoneStore.Repositories.IRepositories;
 using PhoneStore.Repositories.Repositories;
 using PhoneStore.Services.IServices;
 using PhoneStore.Services.Services;
-using Microsoft.AspNetCore.OData;
-using Microsoft.OData.ModelBuilder;
-using PhoneStore.BusinessObjects.Models;
-using Microsoft.OpenApi.Models;
+using PhoneStore.Repositories;
 
 namespace PhoneStoreAPI
 {
@@ -17,33 +17,53 @@ namespace PhoneStoreAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Configure DbContext
             builder.Services.AddDbContext<Prn232PhoneContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn") ?? throw new InvalidOperationException("Connection string 'MyCnn' not found.")));
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+                options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn")
+                    ?? throw new InvalidOperationException("Connection string 'MyCnn' not found.")));
 
-            // Đăng ký Repositories
+            // Add Controllers with JSON options
+            builder.Services.AddControllers()
+        .AddJsonOptions(x =>
+        {
+            x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            x.JsonSerializerOptions.WriteIndented = true;
+        });
+
+            // Add Swagger/OpenAPI
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "PhoneStore API",
+                    Version = "v1"
+                });
+            });
+
+            // Register Repositories
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IBrandRepository, BrandRepository>();
-            // Đăng ký Services
-            builder.Services.AddScoped<IBrandService, BrandService>();
+
+            // Register Services
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IBrandService, BrandService>();
+
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure middleware
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PhoneStore API v1");
+                });
             }
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

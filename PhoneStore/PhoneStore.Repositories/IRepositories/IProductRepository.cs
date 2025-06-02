@@ -7,5 +7,13 @@ namespace PhoneStore.Repositories.IRepositories
     public interface IProductRepository
     {
         Task<IEnumerable<Product>> GetAllAsync();
+        Task<Product?> GetProductDetailByIdAsync(int id);
+        Task<Product?> GetProductByColorAndVersionAsync(string color, string version);
+        Task<IEnumerable<string>> GetAllColorsAsync();
+        Task<IEnumerable<string>> GetAllVersionsAsync();
+        Task<IEnumerable<Product>> GetProductsByColorAsync(string color);
+        Task<IEnumerable<Product>> GetProductsByVersionAsync(string version);
+
+
     }
 }

@@ -20,5 +20,15 @@ namespace PhoneStoreWeb.Controllers
             var products = await _httpClient.GetFromJsonAsync<List<Product>>("Product");
             return View(products);
         }
+        public async Task<IActionResult> ProductDetail(int id)
+        {
+            var product = await _httpClient.GetFromJsonAsync<Product>($"Product/{id}");
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return View(product);
+        }
+
     }
 }

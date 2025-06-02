@@ -7,5 +7,14 @@ namespace PhoneStore.Services.IServices
     public interface IProductService
     {
         Task<IEnumerable<Product>> GetAllAsync();
+        Task<Product?> GetProductDetailAsync(int id);
+        Task<Product?> GetProductByColorAndVersionAsync(string color, string version);
+        Task<IEnumerable<string>> GetAllColorsAsync();
+        Task<IEnumerable<string>> GetAllVersionsAsync();
+        Task<IEnumerable<Product>> GetProductsByColorAsync(string color);
+        Task<IEnumerable<Product>> GetProductsByVersionAsync(string version);
+
+
     }
+
 }
