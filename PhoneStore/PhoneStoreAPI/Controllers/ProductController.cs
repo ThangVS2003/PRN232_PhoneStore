@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OData.Query;
 using PhoneStore.BusinessObjects.Models;
 using PhoneStore.Services.IServices;
+using System.Threading.Tasks;
 
 namespace PhoneStoreAPI.Controllers
 {
@@ -17,6 +17,7 @@ namespace PhoneStoreAPI.Controllers
             _productService = productService;
         }
 
+        // GET: api/product
         [HttpGet]
         [EnableQuery]
         public async Task<IActionResult> Get()
@@ -25,6 +26,87 @@ namespace PhoneStoreAPI.Controllers
             return Ok(products);
         }
 
+        // GET: api/product/detail/
+        [HttpGet("detail/{id}")]
+        public async Task<IActionResult> GetProductDetail(int id)
+        {
+            var product = await _productService.GetProductDetailAsync(id);
+            if (product == null)
+            {
+                return NotFound(new { Message = $"Product with id {id} not found." });
+            }
+            return Ok(product);
+        }
         
+        [HttpGet("by-variant-info")]
+        public async Task<IActionResult> GetProductByColorAndVersion([FromQuery] string color, [FromQuery] string version)
+        {
+            if (string.IsNullOrWhiteSpace(color) || string.IsNullOrWhiteSpace(version))
+            {
+                return BadRequest(new { Message = "Color and Version are required." });
+            }
+
+            var product = await _productService.GetProductByColorAndVersionAsync(color, version);
+            if (product == null)
+            {
+                return NotFound(new { Message = $"No product found with color '{color}' and version '{version}'." });
+            }
+
+            return Ok(product);
+        }
+        // GET: api/product/colors
+        [HttpGet("colors")]
+        public async Task<IActionResult> GetAllColors()
+        {
+            var colors = await _productService.GetAllColorsAsync();
+            return Ok(colors);
+        }
+
+        // GET: api/product/versions
+        [HttpGet("versions")]
+        public async Task<IActionResult> GetAllVersions()
+        {
+            var versions = await _productService.GetAllVersionsAsync();
+            return Ok(versions);
+        }
+        // GET: api/product/by-color?color=Black
+        [HttpGet("string-color")]
+        public async Task<IActionResult> GetProductsByColor([FromQuery] string color)
+        {
+            if (string.IsNullOrWhiteSpace(color))
+            {
+                return BadRequest(new { Message = "Color is required." });
+            }
+
+            var products = await _productService.GetProductsByColorAsync(color);
+            if (!products.Any())
+            {
+                return NotFound(new { Message = $"No products found with color '{color}'." });
+            }
+
+            return Ok(products);
+        }
+
+        // GET: api/product/by-version?version=128GB
+        [HttpGet("string-version")]
+        public async Task<IActionResult> GetProductsByVersion([FromQuery] string version)
+        {
+            if (string.IsNullOrWhiteSpace(version))
+            {
+                return BadRequest(new { Message = "Version is required." });
+            }
+
+            var products = await _productService.GetProductsByVersionAsync(version);
+            if (!products.Any())
+            {
+                return NotFound(new { Message = $"No products found with version '{version}'." });
+            }
+
+            return Ok(products);
+        }
+
+
+
+
     }
 }
