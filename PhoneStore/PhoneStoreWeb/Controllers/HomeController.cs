@@ -70,6 +70,49 @@ namespace PhoneStoreWeb.Controllers
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Filter(string? keyword, decimal? minPrice, decimal? maxPrice)
+        {
+            // Gọi API filter
+            var queryParams = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(keyword)) queryParams["keyword"] = keyword;
+            if (minPrice.HasValue) queryParams["minPrice"] = minPrice.Value.ToString();
+            if (maxPrice.HasValue) queryParams["maxPrice"] = maxPrice.Value.ToString();
+
+            string query = string.Join("&", queryParams.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));
+            string url = string.IsNullOrEmpty(query) ? "api/Product/search" : $"api/Product/search?{query}";
+
+            var response = await _httpClient.GetAsync(url);
+            var products = new List<Product>();
+            if (response.IsSuccessStatusCode)
+            {
+                products = await response.Content.ReadFromJsonAsync<List<Product>>() ?? new();
+            }
+
+            // Lấy danh sách Brand
+            var brands = new List<Brand>();
+            var brandsResponse = await _httpClient.GetAsync("api/Brand");
+            if (brandsResponse.IsSuccessStatusCode)
+            {
+                brands = await brandsResponse.Content.ReadFromJsonAsync<List<Brand>>() ?? new();
+            }
+
+            // Đếm sản phẩm theo Brand
+            var brandCounts = products
+                .GroupBy(p => p.BrandId)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // ViewBag truyền về
+            ViewBag.Products = products;
+            ViewBag.Brands = brands;
+            ViewBag.BrandProductCounts = brandCounts;
+            ViewBag.Keyword = keyword;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+
+            return View("Index");
+        }
+
         public IActionResult Privacy()
         {
             return View();
