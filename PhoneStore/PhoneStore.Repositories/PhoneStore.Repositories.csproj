@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PhoneStore.BusinessObjects\PhoneStore.BusinessObjects.csproj" />
+    <ProjectReference Include="..\PhoneStoreWeb\PhoneStoreWeb.csproj" />
   </ItemGroup>
 
 </Project>
