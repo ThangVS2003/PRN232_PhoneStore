@@ -17,6 +17,11 @@ namespace PhoneStore.Services.IServices
         Task<IEnumerable<Product>> GetProductsByVersionAsync(string version);
 
 
+        Task<Product?> GetByIdAsync(int id);
+        Task AddAsync(Product product);
+        Task UpdateAsync(Product product);
+        Task<Brand?> GetBrandByNameAsync(string brandName);
+        Task DeleteAsync(int id);
     }
 
 }
