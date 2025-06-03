@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
 using PhoneStore.BusinessObjects.Models;
 using Microsoft.OpenApi.Models;
+using Microsoft.OData.Edm;
+using Newtonsoft.Json.Serialization;
 
 namespace PhoneStoreAPI
 {
@@ -20,17 +22,54 @@ namespace PhoneStoreAPI
             // Add services to the container.
             builder.Services.AddDbContext<Prn232PhoneContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn") ?? throw new InvalidOperationException("Connection string 'MyCnn' not found.")));
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            // Cấu hình JSON options
+            builder.Services.AddControllers()
+     .AddNewtonsoftJson(options =>
+     {
+         options.SerializerSettings.ContractResolver = new DefaultContractResolver(); // Giữ nguyên tên trường
+         options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+     })
+     .AddOData(opt => opt.AddRouteComponents("odata", GetEdmModel()).Select().Expand().Filter().OrderBy().Count().SetMaxTop(100));
+            // Add Swagger with JWT support
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PhoneStoreAPI", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
+            });
 
             // Đăng ký Repositories
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
             // Đăng ký Services
             builder.Services.AddScoped<IBrandService, BrandService>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -41,13 +80,19 @@ namespace PhoneStoreAPI
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static IEdmModel GetEdmModel()
+        {
+            var odataBuilder = new ODataConventionModelBuilder();
+            odataBuilder.EntitySet<User>("Users");
+            odataBuilder.EntitySet<Product>("Products");
+            odataBuilder.EntitySet<Brand>("Brands");
+            return odataBuilder.GetEdmModel();
         }
     }
 }
