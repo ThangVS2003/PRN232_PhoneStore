@@ -53,31 +53,5 @@ namespace PhoneStore.Services.Services
             return await _repository.GetProductsByVersionAsync(version);
         }
 
-
-        public async Task<Product?> GetByIdAsync(int id)
-        {
-            return await _repository.GetByIdAsync(id);
-        }
-
-        public async Task AddAsync(Product product)
-        {
-            await _repository.AddAsync(product);
-        }
-
-        public async Task UpdateAsync(Product product)
-        {
-            await _repository.UpdateAsync(product);
-        }
-
-        public async Task<Brand?> GetBrandByNameAsync(string brandName)
-        {
-            return await _repository.GetBrandByNameAsync(brandName);
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            await _repository.DeleteAsync(id);
-        }
-
     }
 }

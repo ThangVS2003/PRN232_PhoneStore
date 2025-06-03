@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using PhoneStore.BusinessObjects.Models;
-using PhoneStore.Services.IServices;
-using PhoneStoreAPI.Models;
-using PhoneStoreWeb.ViewModel;
 using System.Threading.Tasks;
 
 namespace PhoneStoreAPI.Controllers
