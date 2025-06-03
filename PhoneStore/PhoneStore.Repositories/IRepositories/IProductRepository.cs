@@ -1,5 +1,4 @@
 ﻿using PhoneStore.BusinessObjects.Models;
-using PhoneStoreWeb.ViewModel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ namespace PhoneStore.Repositories.IRepositories
         Task<IEnumerable<Product>> GetAllAsync();
 
 
-        Task<IEnumerable<Product>> SearchProductAsync(ProductSearchFilterRequest request);
+        //Task<IEnumerable<Product>> SearchProductAsync(ProductSearchFilterRequest request);
 
         Task<Product?> GetProductDetailByIdAsync(int id);
         Task<Product?> GetProductByColorAndVersionAsync(string color, string version);

@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PhoneStore.Repositories\PhoneStore.Repositories.csproj" />
-    <ProjectReference Include="..\PhoneStoreWeb\PhoneStoreWeb.csproj" />
   </ItemGroup>
 
 </Project>
