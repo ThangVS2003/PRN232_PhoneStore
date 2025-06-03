@@ -22,7 +22,6 @@
     <ProjectReference Include="..\PhoneStore.BusinessObjects\PhoneStore.BusinessObjects.csproj" />
     <ProjectReference Include="..\PhoneStore.Repositories\PhoneStore.Repositories.csproj" />
     <ProjectReference Include="..\PhoneStore.Services\PhoneStore.Services.csproj" />
-    <ProjectReference Include="..\PhoneStoreWeb\PhoneStoreWeb.csproj" />
   </ItemGroup>
 
 </Project>

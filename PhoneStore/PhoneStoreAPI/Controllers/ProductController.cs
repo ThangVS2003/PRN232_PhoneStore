@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using PhoneStore.BusinessObjects.Models;
-using PhoneStore.Services.IServices;
-using PhoneStoreWeb.ViewModel;
 using System.Threading.Tasks;
+using PhoneStore.Services.IServices;
 
 namespace PhoneStoreAPI.Controllers
 {
@@ -27,12 +26,12 @@ namespace PhoneStoreAPI.Controllers
             return Ok(products);
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] ProductSearchFilterRequest request)
-        {
-            var result = await _productService.SearchProductsAsync(request);
-            return Ok(result);
-        }
+        //[HttpGet("search")]
+        //public async Task<IActionResult> Search([FromQuery] ProductSearchFilterRequest request)
+        //{
+        //    var result = await _productService.SearchProductsAsync(request);
+        //    return Ok(result);
+        //}
 
         // GET: api/product/detail/
         [HttpGet("detail/{id}")]

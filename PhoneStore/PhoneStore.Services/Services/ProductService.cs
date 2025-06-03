@@ -2,7 +2,6 @@
 using PhoneStore.Repositories.IRepositories;
 using PhoneStore.Repositories.Repositories;
 using PhoneStore.Services.IServices;
-using PhoneStoreWeb.ViewModel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,11 +19,6 @@ namespace PhoneStore.Services.Services
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
-        }
-
-        public async Task<IEnumerable<Product>> SearchProductsAsync(ProductSearchFilterRequest request)
-        {
-            return await _repository.SearchProductAsync(request);
         }
         public async Task<Product?> GetProductDetailAsync(int id)
         {
@@ -52,9 +46,6 @@ namespace PhoneStore.Services.Services
         {
             return await _repository.GetProductsByVersionAsync(version);
         }
-
-
-
 
     }
 }

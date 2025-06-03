@@ -10,6 +10,7 @@ using PhoneStore.BusinessObjects.Models;
 using Microsoft.OpenApi.Models;
 using Microsoft.OData.Edm;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace PhoneStoreAPI
 {
@@ -21,16 +22,20 @@ namespace PhoneStoreAPI
 
             // Add services to the container.
             builder.Services.AddDbContext<Prn232PhoneContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn") ?? throw new InvalidOperationException("Connection string 'MyCnn' not found.")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn")
+                ?? throw new InvalidOperationException("Connection string 'MyCnn' not found.")));
 
-            // Cấu hình JSON options
+            // Cấu hình JSON sử dụng Newtonsoft.Json và xử lý vòng lặp tham chiếu
             builder.Services.AddControllers()
-     .AddNewtonsoftJson(options =>
-     {
-         options.SerializerSettings.ContractResolver = new DefaultContractResolver(); // Giữ nguyên tên trường
-         options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
-     })
-     .AddOData(opt => opt.AddRouteComponents("odata", GetEdmModel()).Select().Expand().Filter().OrderBy().Count().SetMaxTop(100));
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver(); // Giữ nguyên tên property
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore; // Bỏ qua giá trị null
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // Bỏ qua vòng lặp tham chiếu
+                })
+                .AddOData(opt => opt.AddRouteComponents("odata", GetEdmModel())
+                    .Select().Expand().Filter().OrderBy().Count().SetMaxTop(100));
+
             // Add Swagger with JWT support
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
